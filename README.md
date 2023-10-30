@@ -1,5 +1,7 @@
 # simpledb
 
+**Prince Bhardwaj**, from the Department of Information Technology at SRM University (Roll Number: RA2011008020062), submits the final report for the **simpleDB** project undertaken during semester VI, as part of the **'18CSC303J - Database Management System'** course. This accomplishment marks the successful completion of the project, showcasing dedication and proficiency in the field of computer science.
+
 ## Architecture
 
 This project has a C/C architecture. The C++ server is responsible for parsing and executing SQL, and the Python client is responsible for processing user input. The network transmission between the two is throguh (gRPC).
