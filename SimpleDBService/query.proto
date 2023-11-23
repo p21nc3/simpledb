@@ -1,0 +1,138 @@
+syntax = "proto3";
+package SimpleDB.Service;
+
+service Query {
+  rpc ExecuteSQLProgram (ExecutionRequest) returns (ExecutionBatchResponse);
+}
+
+message ExecutionRequest {
+  string sql = 1;
+}
+
+message ExecutionBatchResponse {
+  repeated ExecutionResponse responses = 1;
+  Stats stats = 4;
+}
+
+message ExecutionResponse {
+  oneof response {
+    ExecutionResult result = 1;
+    ExecutionError error = 2;
+  }
+  string current_db = 3;
+}
+
+message Stats {
+    int32 elapse = 1;
+}
+
+message ExecutionResult {
+  oneof data {
+    PlainResult plain = 1;
+    QueryResult query = 2;
+    ShowTableResult show_table = 3;
+    ShowDatabasesResult show_databases = 4;
+    DescribeTableResult describe_table = 5;
+    ShowIndexesResult show_indexes = 6;
+  }
+}
+
+message ExecutionError {
+  enum Type {
+    ERR_UNSPECIFIED = 0;
+    ERR_INTERNAL = 1;
+    ERR_UNKNOWN = 2;
+    ERR_INCOMPATIBLE_VALUE = 3;
+    ERR_SYNTAX = 4;
+    ERR_DATABASE_EXIST = 5;
+    ERR_CREATE_DATABASE = 6;
+    ERR_DATABASE_NOT_EXIST = 7;
+    ERR_UNINITIALIZED = 8;
+    ERR_INITIALIZATION = 9;
+    ERR_INVAL_DB_NAME = 10;
+    ERR_DB_NOT_SELECTED = 11;
+    ERR_TABLE_EXISTS = 12;
+    ERR_INVAL_TABLE_NAME = 13;
+    ERR_TABLE_NOT_EXISTS = 14;
+    ERR_MUL_PRIKEY = 15;
+    ERR_CREATE_TABLE = 16;
+    ERR_ALT_PRIKEY = 17;
+    ERR_ALT_FOREIGN_KEY = 18;
+    ERR_ALT_INDEX = 19;
+    ERR_INSERT = 20;
+    ERR_SELECT = 21;
+    ERR_UPDATE = 22;
+    ERR_DELETE = 23;
+  }
+  string message = 1;
+  Type type = 2;
+}
+
+message PlainResult {
+  string msg = 1;
+  int32 affected_rows = 2;
+}
+
+// Query result: result for queries.
+message QueryResult {
+  repeated QueryColumn columns = 1;
+  repeated QueryRow rows = 2;
+}
+
+message QueryColumn {
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TYPE_INT = 1;
+    TYPE_FLOAT = 2;
+    TYPE_VARCHAR = 3;
+  }
+  string name = 1;
+  Type type = 2;
+}
+
+message QueryRow {
+  repeated QueryValue values = 1;
+}
+
+message QueryValue {
+  oneof value {
+    int32 int_value = 1;
+    float float_value = 2;
+    string varchar_value = 3;
+    bool null_value = 4;
+  }
+}
+
+// SHOW TABLE result.
+message ShowTableResult {
+  repeated string tables = 1;
+}
+
+// SHOW DATABASAES result.
+message ShowDatabasesResult {
+  repeated string databases = 1;
+}
+
+// DESCRIBE TABLE result.
+message DescribeTableResult {
+  repeated ColumnDescription columns = 1;
+}
+
+message ColumnDescription {
+  string field = 1;
+  string type = 2;
+  bool nullable = 3;
+  bool primary_key = 4;
+  // TODO: Primary key / foreign key
+  optional string default_value = 5;
+}
+
+message ShowIndexesResult {
+  repeated IndexDescription indexes = 1;
+}
+
+message IndexDescription {
+  string table = 1;
+  string column = 2;
+  bool is_pk = 3;
+}
